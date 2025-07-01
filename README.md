@@ -1,73 +1,80 @@
-# Welcome to your Lovable project
+# paw-track
 
-## Project info
+# 🐶 페르소나 정의
 
-**URL**: https://lovable.dev/projects/769ebc55-d2e4-4a24-a462-328a3fe206af
+## 1. 김민수 (29세, 유튜브 크리에이터, 강아지 '콩이' 보호자)
 
-## How can I edit this code?
+- **배경**: 재택근무가 많아 낮 시간에 강아지와 자주 산책함
 
-There are several ways of editing your application.
+- **문제**:
+  - 자주 산책 나오는 이웃이 있지만, 정확히 누가 있는지 알 수 없음
+  - 우연히 마주쳐도 서로 연락처를 따로 교환하지 않음
 
-**Use Lovable**
+- **욕구**:
+  - 지금 누가 공원에 나와 있는지 알고 싶음
+  - “오늘 3시에 나갈게요~” 같은 가벼운 메시지를 보내고 싶음
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/769ebc55-d2e4-4a24-a462-328a3fe206af) and start prompting.
+## 2. 배용남 (42세, 고기집 사장, 강아지 '라떼' 보호자)
 
-Changes made via Lovable will be committed automatically to this repo.
+- **배경**: 주방을 마감하고, 저녁 7시쯤 산책 나감
 
-**Use your preferred IDE**
+- **문제**:
+  - 사교적인 강아지를 위해 친구들을 만들어 주고 싶으나, 동네 강아지가 어디에 있는지 알 수 없음
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- **욕구**:
+  - 실시간으로 상대방 위치 확인 가능
+  - 최소한의 대화만으로 다시 만날 수 있으면 좋겠음
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+ ## 3. 정재혁 (42세, 백엔드 개발자, 강아지 '솜이' 보호자)
 
-Follow these steps:
+- **배경**: 퇴근 후, 저녁 8시쯤 산책 나감
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+- **문제**:
+  - 낯가림이 많은 강아지를 위해 강아지가 없는 한적한 곳에서 산책을 하고 싶으나, 강아지가 없는 곳을 알 수 없음.
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- **욕구**:
+  - 실시간으로 상대방 위치 확인 가능
 
-# Step 3: Install the necessary dependencies.
-npm i
+# 🐾 사용자 스토리
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+## Epic 1: 위치 공유
 
-**Edit a file directly in GitHub**
+### 🧍‍♀️ 사용자 스토리 1
+**“나는 공원에 도착하면, 다른 사람들이 있는지 보고 싶다.”**
+- Given: 사용자가 앱에 접속함
+- When: 위치 공유 기능을 활성화함
+- Then: 지도에서 현재 위치와 다른 사용자들의 위치가 보임
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+### 🧍‍♂️ 사용자 스토리 2
+**“나는 나갈 예정이면, 그걸 간단하게 알리고 싶다.”**
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- Given: 사용자가 집에 있음
+- When: '오늘 5시에 갈게요!' 메세지 전송
+- Then: 다른 사용자들에게 메시지가 전송됨
 
-## What technologies are used for this project?
+---
 
-This project is built with:
+## Epic 2: 메시지 교환
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### 사용자 스토리 3
+**“나는 너무 복잡한 채팅 말고, 간단한 한마디만 보내고 싶다.”**
 
-## How can I deploy this project?
+- Given: 사용자가 산책 중임
+- When: “왔어요~” 메시지를 전송
+- Then: 다른 사용자들에게 메시지가 전송됨
 
-Simply open [Lovable](https://lovable.dev/projects/769ebc55-d2e4-4a24-a462-328a3fe206af) and click on Share -> Publish.
+---
+## Epic 3: 연결 유지
 
-## Can I connect a custom domain to my Lovable project?
+### 사용자 스토리 4
+**“나는 자주 보는 사람들을 따로 친구처럼 등록하고 싶다.”**
 
-Yes, you can!
+- Given: 사용자가 특정 유저를 자주 만남
+- When: '즐겨찾기' 등록
+- Then: 그 유저가 활동 중이면 상단에 표시됨
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+# 배포 url
+https://paw-pal-beacon.lovable.app/
