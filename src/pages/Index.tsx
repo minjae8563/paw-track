@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
-import Map from '@/components/Map';
+import KakaoMap from '@/components/KakaoMap';
 import MessageModal from '@/components/MessageModal';
 import ProfileModal from '@/components/ProfileModal';
 import UserList from '@/components/UserList';
@@ -249,7 +249,7 @@ const Index = () => {
           <Card className="bg-white/80 backdrop-blur-sm border-orange-100 overflow-hidden">
             {selectedView === 'map' ? (
               <div className="h-96 lg:h-[500px]">
-                <Map 
+                <KakaoMap 
                   users={[currentUser, ...users]} 
                   onUserClick={(user) => console.log('User clicked:', user)}
                 />
