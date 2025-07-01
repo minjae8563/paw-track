@@ -58,8 +58,8 @@ const KakaoMap: React.FC<KakaoMapProps> = ({ users, onUserClick }) => {
     if (!mapContainer.current) return;
 
     const options = {
-      center: new window.kakao.maps.LatLng(37.5665, 126.9780), // 서울 중심
-      level: 5, // 지도 확대 레벨
+      center: new window.kakao.maps.LatLng(37.5665, 126.9780), // 서울 명동
+      level: 3, // 지도 확대 레벨을 더 확대
     };
 
     mapRef.current = new window.kakao.maps.Map(mapContainer.current, options);
@@ -158,7 +158,7 @@ const KakaoMap: React.FC<KakaoMapProps> = ({ users, onUserClick }) => {
       <div 
         ref={mapContainer} 
         className="w-full h-full rounded-lg overflow-hidden"
-        style={{ minHeight: '300px' }}
+        style={{ minHeight: '400px' }}
       />
       
       {/* 지도 범례 */}

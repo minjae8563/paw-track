@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { MapPin, MessageCircle, Heart, User, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,7 +9,7 @@ import MessageModal from '@/components/MessageModal';
 import ProfileModal from '@/components/ProfileModal';
 import UserList from '@/components/UserList';
 
-// 더미 데이터 - 서울 실제 위치 기반
+// 더미 데이터 - 서울 실제 위치 기반 (하드코딩)
 const mockUsers = [
   {
     id: '1',
@@ -28,7 +27,7 @@ const mockUsers = [
     name: '배용남',
     dogName: '라떼',
     dogBreed: '시바견',
-    location: { lat: 37.5663, lng: 126.9779 }, // 명동 근처
+    location: { lat: 37.5658, lng: 126.9775 }, // 명동 근처
     status: '7시에 한강공원 산책 나갈게요~',
     isOnline: false,
     isFavorite: false,
@@ -39,7 +38,7 @@ const mockUsers = [
     name: '정재혁',
     dogName: '솜이',
     dogBreed: '푸들',
-    location: { lat: 37.5668, lng: 126.9785 }, // 을지로
+    location: { lat: 37.5672, lng: 126.9785 }, // 을지로
     status: '조용한 곳에서 산책 중...',
     isOnline: true,
     isFavorite: true,
@@ -49,12 +48,13 @@ const mockUsers = [
 
 const Index = () => {
   const [users, setUsers] = useState(mockUsers);
+  // 현재 사용자 위치를 하드코딩으로 설정
   const [currentUser, setCurrentUser] = useState({
     id: 'me',
     name: '나',
     dogName: '내 강아지',
     dogBreed: '믹스',
-    location: { lat: 37.5665, lng: 126.9780 }, // 서울 중심부
+    location: { lat: 37.5665, lng: 126.9780 }, // 서울 명동 중심부 하드코딩
     status: '산책 준비 중...',
     isOnline: true,
   });
@@ -63,39 +63,13 @@ const Index = () => {
   const [selectedView, setSelectedView] = useState<'map' | 'list'>('map');
 
   const handleLocationShare = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const newLocation = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
-          setCurrentUser(prev => ({ ...prev, location: newLocation }));
-          toast({
-            title: "위치가 공유되었습니다! 🐾",
-            description: "다른 사용자들이 내 위치를 볼 수 있어요.",
-          });
-        },
-        (error) => {
-          console.error('위치 접근 오류:', error);
-          // 위치 접근 실패시 서울 기본 위치로 설정
-          const seoulLocation = { lat: 37.5665, lng: 126.9780 };
-          setCurrentUser(prev => ({ ...prev, location: seoulLocation }));
-          toast({
-            title: "서울 중심가로 위치가 설정되었습니다",
-            description: "실제 위치 사용을 원하시면 위치 접근을 허용해주세요.",
-          });
-        }
-      );
-    } else {
-      // Geolocation을 지원하지 않는 경우 서울 기본 위치
-      const seoulLocation = { lat: 37.5665, lng: 126.9780 };
-      setCurrentUser(prev => ({ ...prev, location: seoulLocation }));
-      toast({
-        title: "서울 중심가로 위치가 설정되었습니다",
-        description: "브라우저가 위치 서비스를 지원하지 않습니다.",
-      });
-    }
+    // 하드코딩된 서울 위치로 설정
+    const seoulLocation = { lat: 37.5665, lng: 126.9780 };
+    setCurrentUser(prev => ({ ...prev, location: seoulLocation }));
+    toast({
+      title: "위치가 공유되었습니다! 🐾",
+      description: "서울 명동 중심가로 위치가 설정되었어요.",
+    });
   };
 
   const handleSendMessage = (message: string) => {
