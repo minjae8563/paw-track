@@ -10,15 +10,15 @@ import MessageModal from '@/components/MessageModal';
 import ProfileModal from '@/components/ProfileModal';
 import UserList from '@/components/UserList';
 
-// 더미 데이터
+// 더미 데이터 - 서울 실제 위치 기반
 const mockUsers = [
   {
     id: '1',
     name: '김민수',
     dogName: '콩이',
     dogBreed: '골든리트리버',
-    location: { lat: 37.5665, lng: 126.9780 },
-    status: '지금 공원에 있어요! 🐕',
+    location: { lat: 37.5665, lng: 126.9780 }, // 명동
+    status: '지금 남산공원에 있어요! 🐕',
     isOnline: true,
     isFavorite: true,
     lastSeen: new Date(),
@@ -28,8 +28,8 @@ const mockUsers = [
     name: '배용남',
     dogName: '라떼',
     dogBreed: '시바견',
-    location: { lat: 37.5675, lng: 126.9785 },
-    status: '7시에 산책 나갈게요~',
+    location: { lat: 37.5663, lng: 126.9779 }, // 명동 근처
+    status: '7시에 한강공원 산책 나갈게요~',
     isOnline: false,
     isFavorite: false,
     lastSeen: new Date(Date.now() - 30 * 60 * 1000),
@@ -39,7 +39,7 @@ const mockUsers = [
     name: '정재혁',
     dogName: '솜이',
     dogBreed: '푸들',
-    location: { lat: 37.5670, lng: 126.9775 },
+    location: { lat: 37.5668, lng: 126.9785 }, // 을지로
     status: '조용한 곳에서 산책 중...',
     isOnline: true,
     isFavorite: true,
@@ -54,7 +54,7 @@ const Index = () => {
     name: '나',
     dogName: '내 강아지',
     dogBreed: '믹스',
-    location: { lat: 37.5665, lng: 126.9780 },
+    location: { lat: 37.5665, lng: 126.9780 }, // 서울 중심부
     status: '산책 준비 중...',
     isOnline: true,
   });
@@ -78,13 +78,23 @@ const Index = () => {
         },
         (error) => {
           console.error('위치 접근 오류:', error);
+          // 위치 접근 실패시 서울 기본 위치로 설정
+          const seoulLocation = { lat: 37.5665, lng: 126.9780 };
+          setCurrentUser(prev => ({ ...prev, location: seoulLocation }));
           toast({
-            title: "위치 접근 실패",
-            description: "위치 접근을 허용해주세요.",
-            variant: "destructive",
+            title: "서울 중심가로 위치가 설정되었습니다",
+            description: "실제 위치 사용을 원하시면 위치 접근을 허용해주세요.",
           });
         }
       );
+    } else {
+      // Geolocation을 지원하지 않는 경우 서울 기본 위치
+      const seoulLocation = { lat: 37.5665, lng: 126.9780 };
+      setCurrentUser(prev => ({ ...prev, location: seoulLocation }));
+      toast({
+        title: "서울 중심가로 위치가 설정되었습니다",
+        description: "브라우저가 위치 서비스를 지원하지 않습니다.",
+      });
     }
   };
 
@@ -120,7 +130,7 @@ const Index = () => {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-800">PawTrack</h1>
-                <p className="text-sm text-gray-600">반려견 산책 친구 찾기</p>
+                <p className="text-sm text-gray-600">서울 반려견 산책 친구 찾기</p>
               </div>
             </div>
             
@@ -211,7 +221,7 @@ const Index = () => {
           <Card className="p-3 bg-white/80 backdrop-blur-sm border-orange-100">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium text-gray-700">현재 활동중인 사용자</span>
+                <span className="text-sm font-medium text-gray-700">서울 지역 활동중인 사용자</span>
                 <Badge className="bg-green-500">{onlineUsers.length}</Badge>
               </div>
               <div className="flex rounded-lg border border-gray-200 overflow-hidden">
@@ -268,7 +278,13 @@ const Index = () => {
         onClose={() => setShowProfileModal(false)}
         user={currentUser}
         onSave={(updatedUser) => {
-          setCurrentUser(updatedUser);
+          // 타입 호환성을 위해 필요한 속성들을 포함한 객체로 업데이트
+          setCurrentUser(prev => ({
+            ...prev,
+            ...updatedUser,
+            location: prev.location, // 기존 위치 유지
+            isOnline: prev.isOnline   // 기존 온라인 상태 유지
+          }));
           setShowProfileModal(false);
           toast({
             title: "프로필이 업데이트되었습니다! ✨",

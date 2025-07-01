@@ -10,12 +10,12 @@ interface User {
   isFavorite?: boolean;
 }
 
-interface MapProps {
+interface SeoulMapProps {
   users: User[];
   onUserClick?: (user: User) => void;
 }
 
-const Map: React.FC<MapProps> = ({ users, onUserClick }) => {
+const SeoulMap: React.FC<SeoulMapProps> = ({ users, onUserClick }) => {
   const mapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -66,7 +66,7 @@ const Map: React.FC<MapProps> = ({ users, onUserClick }) => {
 
     landmarks.forEach(landmark => {
       const landmarkDiv = document.createElement('div');
-      landmarkDiv.className = 'absolute text-lg opacity-60 hover:opacity-100 transition-opacity cursor-pointer';
+      landmarkDiv.className = 'absolute text-lg opacity-60';
       landmarkDiv.style.left = landmark.left;
       landmarkDiv.style.top = landmark.top;
       landmarkDiv.innerHTML = landmark.icon;
@@ -87,11 +87,11 @@ const Map: React.FC<MapProps> = ({ users, onUserClick }) => {
       const latRange = 0.1; // 위도 범위
       const lngRange = 0.1; // 경도 범위
 
-      const xPos = 50 + ((user.location.lng - centerLng) / lngRange) * 40; // 중심 기준 ±40%
-      const yPos = 50 - ((user.location.lat - centerLat) / latRange) * 40; // y축 반전
+      const xPos = 50 + ((user.location.lng - centerLng) / lngRange) * 40; // 10%-90% 범위
+      const yPos = 50 - ((user.location.lat - centerLat) / latRange) * 40; // 10%-90% 범위 (y축 반전)
 
-      marker.style.left = `${Math.max(15, Math.min(85, xPos))}%`;
-      marker.style.top = `${Math.max(15, Math.min(85, yPos))}%`;
+      marker.style.left = `${Math.max(10, Math.min(90, xPos))}%`;
+      marker.style.top = `${Math.max(10, Math.min(90, yPos))}%`;
 
       // 마커 디자인
       const isCurrentUser = user.id === 'me';
@@ -107,11 +107,11 @@ const Map: React.FC<MapProps> = ({ users, onUserClick }) => {
             <span class="text-white text-lg">${isCurrentUser ? '🏠' : '🐕'}</span>
           </div>
           ${user.isFavorite ? '<div class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center"><span class="text-white text-xs">❤️</span></div>' : ''}
-          <div class="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 bg-white px-2 py-1 rounded shadow-md text-xs font-medium whitespace-nowrap border">
+          <div class="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 bg-white px-2 py-1 rounded shadow-md text-xs font-medium whitespace-nowrap">
             ${user.dogName}
             ${user.isOnline ? '<span class="inline-block w-2 h-2 bg-green-400 rounded-full ml-1"></span>' : ''}
           </div>
-          ${isCurrentUser ? '<div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-orange-600 font-medium whitespace-nowrap">내 위치</div>' : ''}
+          ${isCurrentUser ? '<div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-gray-600 whitespace-nowrap">내 위치</div>' : ''}
         </div>
       `;
 
@@ -124,38 +124,45 @@ const Map: React.FC<MapProps> = ({ users, onUserClick }) => {
 
     // 서울 지역 범례
     const legend = document.createElement('div');
-    legend.className = 'absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg text-xs space-y-1 border';
+    legend.className = 'absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm p-3 rounded-lg shadow-md text-xs space-y-1';
     legend.innerHTML = `
-      <div class="font-semibold text-gray-700 mb-2 flex items-center">
-        <span class="mr-2">🗺️</span>서울특별시
-      </div>
+      <div class="font-semibold text-gray-700 mb-2">🗺️ 서울 지역</div>
       <div class="flex items-center space-x-2">
         <div class="w-3 h-3 bg-gradient-to-r from-orange-400 to-orange-500 rounded-full"></div>
         <span>내 위치</span>
       </div>
       <div class="flex items-center space-x-2">
         <div class="w-3 h-3 bg-gradient-to-r from-green-400 to-green-500 rounded-full"></div>
-        <span>활동중</span>
+        <span>활동중인 사용자</span>
       </div>
       <div class="flex items-center space-x-2">
         <div class="w-3 h-3 bg-gradient-to-r from-gray-400 to-gray-500 rounded-full"></div>
-        <span>오프라인</span>
+        <span>오프라인 사용자</span>
       </div>
-      <div class="text-xs text-gray-500 mt-2 pt-2 border-t">
-        💡 마커를 클릭하면 상세 정보를 볼 수 있어요
+      <div class="text-xs text-gray-500 mt-2">
+        🌊 한강 🗼 남산 🏰 궁궐 🏟️ 공원
       </div>
     `;
     mapContainer.appendChild(legend);
+
+    // 서울 구역 정보
+    const seoulInfo = document.createElement('div');
+    seoulInfo.className = 'absolute top-4 right-4 bg-white/90 backdrop-blur-sm p-3 rounded-lg shadow-md text-xs';
+    seoulInfo.innerHTML = `
+      <div class="font-semibold text-gray-700 mb-1">📍 서울특별시</div>
+      <div class="text-gray-600">반려견 산책 친구 찾기</div>
+    `;
+    mapContainer.appendChild(seoulInfo);
 
   }, [users, onUserClick]);
 
   return (
     <div 
       ref={mapRef} 
-      className="relative w-full h-full bg-gradient-to-br from-blue-50 to-green-50 rounded-lg overflow-hidden border"
+      className="relative w-full h-full bg-gray-100 rounded-lg overflow-hidden"
       style={{ minHeight: '300px' }}
     >
-      <div className="absolute inset-0 flex items-center justify-center text-gray-400 z-0">
+      <div className="absolute inset-0 flex items-center justify-center text-gray-400">
         <div className="text-center">
           <div className="text-4xl mb-2">🗺️</div>
           <p className="text-sm">서울 지도 로딩 중...</p>
@@ -165,4 +172,4 @@ const Map: React.FC<MapProps> = ({ users, onUserClick }) => {
   );
 };
 
-export default Map;
+export default SeoulMap;
