@@ -27,15 +27,27 @@ const KakaoMap: React.FC<KakaoMapProps> = ({ users, onUserClick }) => {
   const markersRef = useRef<any[]>([]);
 
   useEffect(() => {
-    // 카카오맵 스크립트 동적 로드
+    // 기존 스크립트 제거
+    const existingScript = document.querySelector('script[src*="dapi.kakao.com"]');
+    if (existingScript) {
+      existingScript.remove();
+    }
+
+    // 카카오맵 스크립트 동적 로드 (새로운 JavaScript 키 사용)
     const script = document.createElement('script');
     script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=1ac839b0724e5dc767563533b657aba9&autoload=false`;
     script.async = true;
     
     script.onload = () => {
-      window.kakao.maps.load(() => {
-        initializeMap();
-      });
+      if (window.kakao && window.kakao.maps) {
+        window.kakao.maps.load(() => {
+          initializeMap();
+        });
+      }
+    };
+    
+    script.onerror = () => {
+      console.error('카카오맵 스크립트 로드 실패');
     };
     
     document.head.appendChild(script);
@@ -55,11 +67,11 @@ const KakaoMap: React.FC<KakaoMapProps> = ({ users, onUserClick }) => {
   }, [users]);
 
   const initializeMap = () => {
-    if (!mapContainer.current) return;
+    if (!mapContainer.current || !window.kakao) return;
 
     const options = {
-      center: new window.kakao.maps.LatLng(37.5665, 126.9780), // 서울 명동
-      level: 3, // 지도 확대 레벨을 더 확대
+      center: new window.kakao.maps.LatLng(37.5665, 126.9780), // 서울 명동 하드코딩
+      level: 3, // 지도 확대 레벨
     };
 
     mapRef.current = new window.kakao.maps.Map(mapContainer.current, options);
@@ -72,15 +84,22 @@ const KakaoMap: React.FC<KakaoMapProps> = ({ users, onUserClick }) => {
     const zoomControl = new window.kakao.maps.ZoomControl();
     mapRef.current.addControl(zoomControl, window.kakao.maps.ControlPosition.RIGHT);
 
+    console.log('카카오맵 초기화 완료');
     updateMarkers();
   };
 
   const updateMarkers = () => {
-    if (!mapRef.current) return;
+    if (!mapRef.current || !window.kakao) return;
 
     // 기존 마커 제거
-    markersRef.current.forEach(marker => marker.setMap(null));
+    markersRef.current.forEach(marker => {
+      if (marker && marker.setMap) {
+        marker.setMap(null);
+      }
+    });
     markersRef.current = [];
+
+    console.log('마커 업데이트 시작, 사용자 수:', users.length);
 
     users.forEach(user => {
       const position = new window.kakao.maps.LatLng(user.location.lat, user.location.lng);
@@ -135,7 +154,7 @@ const KakaoMap: React.FC<KakaoMapProps> = ({ users, onUserClick }) => {
       // 마커 클릭 이벤트
       window.kakao.maps.event.addListener(marker, 'click', () => {
         // 다른 인포윈도우 닫기
-        markersRef.current.forEach((m, index) => {
+        markersRef.current.forEach((m) => {
           if (m !== marker && m.infoWindow) {
             m.infoWindow.close();
           }
@@ -151,6 +170,8 @@ const KakaoMap: React.FC<KakaoMapProps> = ({ users, onUserClick }) => {
       // 마커에 인포윈도우 참조 저장
       marker.infoWindow = infoWindow;
     });
+
+    console.log('마커 업데이트 완료, 총 마커 수:', markersRef.current.length);
   };
 
   return (

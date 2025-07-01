@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
@@ -51,13 +50,13 @@ const mockUsers = [
 
 const Index = () => {
   const [users, setUsers] = useState(mockUsers);
-  // 현재 사용자 위치를 하드코딩으로 설정
+  // 현재 사용자 위치를 완전히 하드코딩으로 고정
   const [currentUser, setCurrentUser] = useState({
     id: 'me',
     name: '나',
     dogName: '내 강아지',
     dogBreed: '믹스',
-    location: { lat: 37.5665, lng: 126.9780 }, // 서울 명동 중심부 하드코딩
+    location: { lat: 37.5665, lng: 126.9780 }, // 서울 명동 중심부 완전 하드코딩
     status: '산책 준비 중...',
     isOnline: true,
   });
@@ -66,12 +65,12 @@ const Index = () => {
   const [selectedView, setSelectedView] = useState<'map' | 'list'>('map');
 
   const handleLocationShare = () => {
-    // 하드코딩된 서울 위치로 설정
+    // 하드코딩된 서울 위치로 고정 (변경 없음)
     const seoulLocation = { lat: 37.5665, lng: 126.9780 };
     setCurrentUser(prev => ({ ...prev, location: seoulLocation }));
     toast({
       title: "위치가 공유되었습니다! 🐾",
-      description: "서울 명동 중심가로 위치가 설정되었어요.",
+      description: "서울 명동 중심가로 위치가 고정되었어요.",
     });
   };
 
