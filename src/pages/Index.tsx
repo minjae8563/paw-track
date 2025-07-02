@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
@@ -12,14 +11,14 @@ import QuickActions from '@/components/QuickActions';
 import FavoriteUsers from '@/components/FavoriteUsers';
 import ViewToggle from '@/components/ViewToggle';
 
-// 더미 데이터 - 서울 실제 위치 기반 (하드코딩)
+// 더미 데이터 - 서울 내 실제 다른 위치들로 분산 배치
 const mockUsers = [
   {
     id: '1',
     name: '김민수',
     dogName: '콩이',
     dogBreed: '골든리트리버',
-    location: { lat: 37.5665, lng: 126.9780 }, // 명동
+    location: { lat: 37.5708, lng: 126.9856 }, // 광화문광장
     status: '지금 남산공원에 있어요! 🐕',
     isOnline: true,
     isFavorite: true,
@@ -30,7 +29,7 @@ const mockUsers = [
     name: '배용남',
     dogName: '라떼',
     dogBreed: '시바견',
-    location: { lat: 37.5658, lng: 126.9775 }, // 명동 근처
+    location: { lat: 37.5172, lng: 127.0473 }, // 강남역
     status: '7시에 한강공원 산책 나갈게요~',
     isOnline: false,
     isFavorite: false,
@@ -41,7 +40,7 @@ const mockUsers = [
     name: '정재혁',
     dogName: '솜이',
     dogBreed: '푸들',
-    location: { lat: 37.5672, lng: 126.9785 }, // 을지로
+    location: { lat: 37.5563, lng: 126.9723 }, // 홍대입구
     status: '조용한 곳에서 산책 중...',
     isOnline: true,
     isFavorite: true,
@@ -51,13 +50,13 @@ const mockUsers = [
 
 const Index = () => {
   const [users, setUsers] = useState(mockUsers);
-  // 현재 사용자 위치를 완전히 하드코딩으로 고정
+  // 현재 사용자 위치를 명동으로 유지 (다른 사용자들과 구별되도록)
   const [currentUser, setCurrentUser] = useState({
     id: 'me',
     name: '나',
     dogName: '내 강아지',
     dogBreed: '믹스',
-    location: { lat: 37.5665, lng: 126.9780 }, // 서울 명동 중심부 완전 하드코딩
+    location: { lat: 37.5665, lng: 126.9780 }, // 명동
     status: '산책 준비 중...',
     isOnline: true,
   });
