@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 
 interface User {
@@ -77,24 +76,36 @@ const Map: React.FC<MapProps> = ({ users, onUserClick }) => {
       mapContainer.appendChild(landmarkDiv);
     });
 
-    // 사용자 마커 생성 - 더 예쁘고 현대적인 디자인
+    // 사용자 마커 생성 - 더 넓게 분산 배치
     users.forEach((user, index) => {
       const marker = document.createElement('div');
       marker.className = `absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-all duration-300 hover:scale-125 hover:z-30 ${
         user.id === 'me' ? 'z-20' : 'z-10'
       }`;
       
-      // 실제 좌표를 화면 위치로 변환
+      // 위치를 더 넓게 분산시키기 위한 새로운 계산 방식
       const centerLat = 37.5665;
       const centerLng = 126.9780;
-      const latRange = 0.08;
-      const lngRange = 0.08;
+      
+      // 분산 범위를 크게 늘림
+      const latRange = 0.15; // 기존 0.08에서 0.15로 증가
+      const lngRange = 0.15; // 기존 0.08에서 0.15로 증가
 
-      const xPos = 50 + ((user.location.lng - centerLng) / lngRange) * 35;
-      const yPos = 50 - ((user.location.lat - centerLat) / latRange) * 35;
+      // 위치 계산을 더 넓게 분산
+      let xPos = 50 + ((user.location.lng - centerLng) / lngRange) * 60; // 기존 35에서 60으로 증가
+      let yPos = 50 - ((user.location.lat - centerLat) / latRange) * 60; // 기존 35에서 60으로 증가
 
-      marker.style.left = `${Math.max(10, Math.min(90, xPos))}%`;
-      marker.style.top = `${Math.max(10, Math.min(90, yPos))}%`;
+      // 사용자별로 추가 오프셋 적용하여 겹침 방지
+      if (user.id !== 'me') {
+        const offsetX = (index % 3 - 1) * 8; // -8, 0, 8 픽셀 오프셋
+        const offsetY = (Math.floor(index / 3) % 3 - 1) * 8; // -8, 0, 8 픽셀 오프셋
+        xPos += offsetX;
+        yPos += offsetY;
+      }
+
+      // 경계 체크를 더 넓게
+      marker.style.left = `${Math.max(5, Math.min(95, xPos))}%`;
+      marker.style.top = `${Math.max(5, Math.min(95, yPos))}%`;
 
       const isCurrentUser = user.id === 'me';
       const markerColor = isCurrentUser 
