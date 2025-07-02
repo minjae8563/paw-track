@@ -202,7 +202,7 @@ const Map: React.FC<MapProps> = ({ users, onUserClick }) => {
       className="relative w-full h-full bg-gradient-to-br from-blue-50 via-white to-green-50 rounded-xl overflow-hidden border-2 border-gray-100/50 shadow-inner"
       style={{ minHeight: '400px' }}
     >
-      <!-- 로딩 상태 -->
+      {/* Loading state */}
       <div className="absolute inset-0 flex items-center justify-center text-gray-400 z-0">
         <div className="text-center">
           <div className="text-5xl mb-3 animate-pulse">🗺️</div>
