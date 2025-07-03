@@ -1,8 +1,8 @@
-
 import React from 'react';
-import { Heart } from 'lucide-react';
+import { Heart, X } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 interface User {
   id: string;
@@ -14,9 +14,10 @@ interface User {
 
 interface FavoriteUsersProps {
   favoriteUsers: User[];
+  onRemoveFavorite: (userId: string) => void;
 }
 
-const FavoriteUsers: React.FC<FavoriteUsersProps> = ({ favoriteUsers }) => {
+const FavoriteUsers: React.FC<FavoriteUsersProps> = ({ favoriteUsers, onRemoveFavorite }) => {
   if (favoriteUsers.length === 0) {
     return null;
   }
@@ -29,14 +30,24 @@ const FavoriteUsers: React.FC<FavoriteUsersProps> = ({ favoriteUsers }) => {
       </h3>
       <div className="space-y-2">
         {favoriteUsers.map(user => (
-          <div key={user.id} className="flex items-center justify-between p-2 bg-orange-50 rounded-lg">
+          <div key={user.id} className="flex items-center justify-between p-2 bg-orange-50 rounded-lg group">
             <div>
               <p className="text-sm font-medium text-gray-800">{user.dogName}</p>
               <p className="text-xs text-gray-600">{user.name}</p>
             </div>
-            <Badge variant={user.isOnline ? "default" : "secondary"} className="text-xs">
-              {user.isOnline ? "활동중" : "오프라인"}
-            </Badge>
+            <div className="flex items-center space-x-2">
+              <Badge variant={user.isOnline ? "default" : "secondary"} className="text-xs">
+                {user.isOnline ? "활동중" : "오프라인"}
+              </Badge>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => onRemoveFavorite(user.id)}
+                className="w-6 h-6 p-0 opacity-0 group-hover:opacity-100 hover:bg-red-100 transition-opacity"
+              >
+                <X className="w-3 h-3 text-red-500" />
+              </Button>
+            </div>
           </div>
         ))}
       </div>

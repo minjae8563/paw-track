@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, MessageCircle, MapPin } from 'lucide-react';
+import { Heart, MessageCircle, MapPin, HeartOff } from 'lucide-react';
 
 interface User {
   id: string;
@@ -17,10 +16,11 @@ interface User {
 
 interface UserListProps {
   users: User[];
-  onToggleFavorite: (userId: string) => void;
+  onFavoriteRequest: (userId: string) => void;
+  onRemoveFavorite: (userId: string) => void;
 }
 
-const UserList: React.FC<UserListProps> = ({ users, onToggleFavorite }) => {
+const UserList: React.FC<UserListProps> = ({ users, onFavoriteRequest, onRemoveFavorite }) => {
   const formatLastSeen = (date: Date) => {
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
@@ -98,24 +98,25 @@ const UserList: React.FC<UserListProps> = ({ users, onToggleFavorite }) => {
 
                 {/* Actions */}
                 <div className="flex flex-col space-y-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => onToggleFavorite(user.id)}
-                    className={`w-10 h-10 p-0 ${
-                      user.isFavorite 
-                        ? 'border-red-200 hover:bg-red-50' 
-                        : 'border-gray-200 hover:bg-gray-50'
-                    }`}
-                  >
-                    <Heart 
-                      className={`w-4 h-4 ${
-                        user.isFavorite 
-                          ? 'text-red-500 fill-current' 
-                          : 'text-gray-400'
-                      }`} 
-                    />
-                  </Button>
+                  {user.isFavorite ? (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => onRemoveFavorite(user.id)}
+                      className="w-10 h-10 p-0 border-red-200 hover:bg-red-50"
+                    >
+                      <HeartOff className="w-4 h-4 text-red-500" />
+                    </Button>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => onFavoriteRequest(user.id)}
+                      className="w-10 h-10 p-0 border-red-200 hover:bg-red-50"
+                    >
+                      <Heart className="w-4 h-4 text-gray-400" />
+                    </Button>
+                  )}
 
                   <Button
                     size="sm"

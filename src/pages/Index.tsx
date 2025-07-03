@@ -4,6 +4,7 @@ import { toast } from '@/hooks/use-toast';
 import Map from '@/components/Map';
 import MessageModal from '@/components/MessageModal';
 import ProfileModal from '@/components/ProfileModal';
+import FavoriteRequestModal from '@/components/FavoriteRequestModal';
 import UserList from '@/components/UserList';
 import Header from '@/components/Header';
 import StatusCard from '@/components/StatusCard';
@@ -48,9 +49,27 @@ const mockUsers = [
   },
 ];
 
+interface FavoriteRequest {
+  id: string;
+  fromUser: {
+    id: string;
+    name: string;
+    dogName: string;
+    dogBreed: string;
+  };
+  toUser: {
+    id: string;
+    name: string;
+    dogName: string;
+    dogBreed: string;
+  };
+  timestamp: Date;
+}
+
 const Index = () => {
   const [users, setUsers] = useState(mockUsers);
-  // 현재 사용자 위치를 명동으로 유지 (다른 사용자들과 구별되도록)
+  const [favoriteRequests, setFavoriteRequests] = useState<FavoriteRequest[]>([]);
+  const [showFavoriteRequestModal, setShowFavoriteRequestModal] = useState(false);
   const [currentUser, setCurrentUser] = useState({
     id: 'me',
     name: '나',
@@ -83,12 +102,106 @@ const Index = () => {
     setShowMessageModal(false);
   };
 
-  const toggleFavorite = (userId: string) => {
+  const handleFavoriteRequest = (userId: string) => {
+    const targetUser = users.find(user => user.id === userId);
+    if (!targetUser) return;
+
+    // 이미 즐겨찾기된 사용자인지 확인
+    if (targetUser.isFavorite) {
+      toast({
+        title: "이미 즐겨찾기에 추가된 사용자입니다! ❤️",
+        description: `${targetUser.dogName}님은 이미 즐겨찾기에 있어요.`,
+      });
+      return;
+    }
+
+    // 이미 요청을 보냈는지 확인
+    const existingRequest = favoriteRequests.find(
+      req => req.fromUser.id === 'me' && req.toUser.id === userId
+    );
+
+    if (existingRequest) {
+      toast({
+        title: "이미 요청을 보냈습니다! ⏳",
+        description: `${targetUser.dogName}님의 응답을 기다리고 있어요.`,
+      });
+      return;
+    }
+
+    // 새로운 즐겨찾기 요청 생성 (실제로는 상대방에게 전송)
+    const newRequest: FavoriteRequest = {
+      id: Date.now().toString(),
+      fromUser: {
+        id: currentUser.id,
+        name: currentUser.name,
+        dogName: currentUser.dogName,
+        dogBreed: currentUser.dogBreed,
+      },
+      toUser: {
+        id: targetUser.id,
+        name: targetUser.name,
+        dogName: targetUser.dogName,
+        dogBreed: targetUser.dogBreed,
+      },
+      timestamp: new Date(),
+    };
+
+    // 데모를 위해 자동으로 상대방의 요청 목록에 추가 (실제로는 서버를 통해 처리)
+    setFavoriteRequests(prev => [...prev, newRequest]);
+
+    toast({
+      title: "즐겨찾기 요청을 보냈습니다! 💌",
+      description: `${targetUser.dogName}님에게 즐겨찾기 요청을 보냈어요.`,
+    });
+  };
+
+  const handleAcceptFavoriteRequest = (requestId: string) => {
+    const request = favoriteRequests.find(req => req.id === requestId);
+    if (!request) return;
+
+    // 양방향으로 즐겨찾기 추가
     setUsers(prev => prev.map(user => 
-      user.id === userId 
-        ? { ...user, isFavorite: !user.isFavorite }
+      user.id === request.fromUser.id 
+        ? { ...user, isFavorite: true }
         : user
     ));
+
+    // 요청 제거
+    setFavoriteRequests(prev => prev.filter(req => req.id !== requestId));
+
+    toast({
+      title: "즐겨찾기가 추가되었습니다! ❤️",
+      description: `${request.fromUser.dogName}님과 서로 즐겨찾기가 되었어요!`,
+    });
+  };
+
+  const handleRejectFavoriteRequest = (requestId: string) => {
+    const request = favoriteRequests.find(req => req.id === requestId);
+    if (!request) return;
+
+    // 요청 제거
+    setFavoriteRequests(prev => prev.filter(req => req.id !== requestId));
+
+    toast({
+      title: "요청을 거절했습니다",
+      description: `${request.fromUser.dogName}님의 즐겨찾기 요청을 거절했어요.`,
+    });
+  };
+
+  const removeFavorite = (userId: string) => {
+    setUsers(prev => prev.map(user => 
+      user.id === userId 
+        ? { ...user, isFavorite: false }
+        : user
+    ));
+
+    const user = users.find(u => u.id === userId);
+    if (user) {
+      toast({
+        title: "즐겨찾기에서 제거되었습니다",
+        description: `${user.dogName}님을 즐겨찾기에서 제거했어요.`,
+      });
+    }
   };
 
   const favoriteUsers = users.filter(user => user.isFavorite);
@@ -96,21 +209,23 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-green-50">
-      <Header onProfileClick={() => setShowProfileModal(true)} />
+      <Header 
+        onProfileClick={() => setShowProfileModal(true)}
+        favoriteRequestCount={favoriteRequests.length}
+        onFavoriteRequestClick={() => setShowFavoriteRequestModal(true)}
+      />
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Sidebar - Status & Actions */}
         <div className="space-y-4">
           <StatusCard user={currentUser} />
           <QuickActions 
             onLocationShare={handleLocationShare}
             onMessageClick={() => setShowMessageModal(true)}
           />
-          <FavoriteUsers favoriteUsers={favoriteUsers} />
+          <FavoriteUsers favoriteUsers={favoriteUsers} onRemoveFavorite={removeFavorite} />
         </div>
 
-        {/* Center - Map/List View */}
         <div className="lg:col-span-2 space-y-4">
           <ViewToggle 
             selectedView={selectedView}
@@ -118,7 +233,6 @@ const Index = () => {
             onlineUsersCount={onlineUsers.length}
           />
 
-          {/* Map or List View */}
           <Card className="bg-white/80 backdrop-blur-sm border-orange-100 overflow-hidden">
             {selectedView === 'map' ? (
               <div className="h-96 lg:h-[500px]">
@@ -131,7 +245,8 @@ const Index = () => {
               <div className="p-4">
                 <UserList 
                   users={users}
-                  onToggleFavorite={toggleFavorite}
+                  onFavoriteRequest={handleFavoriteRequest}
+                  onRemoveFavorite={removeFavorite}
                 />
               </div>
             )}
@@ -163,6 +278,14 @@ const Index = () => {
             title: "프로필이 업데이트되었습니다! ✨",
           });
         }}
+      />
+
+      <FavoriteRequestModal
+        isOpen={showFavoriteRequestModal}
+        onClose={() => setShowFavoriteRequestModal(false)}
+        requests={favoriteRequests}
+        onAccept={handleAcceptFavoriteRequest}
+        onReject={handleRejectFavoriteRequest}
       />
     </div>
   );
