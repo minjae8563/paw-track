@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 interface User {
   dogName: string;
   dogBreed: string;
+  nickname: string;
   status: string;
 }
 
@@ -21,7 +22,7 @@ const StatusCard: React.FC<StatusCardProps> = ({ user }) => {
         </div>
         <div>
           <h3 className="font-semibold text-gray-800">{user.dogName}</h3>
-          <p className="text-sm text-gray-600">{user.dogBreed}</p>
+          <p className="text-sm text-gray-600">{user.nickname} • {user.dogBreed}</p>
         </div>
         <div className="p-3 bg-orange-50 rounded-lg">
           <p className="text-sm text-gray-700">"{user.status}"</p>

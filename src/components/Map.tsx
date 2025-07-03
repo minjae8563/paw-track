@@ -3,6 +3,7 @@ import React, { useEffect, useRef } from 'react';
 interface User {
   id: string;
   name: string;
+  nickname: string;
   dogName: string;
   location: { lat: number; lng: number };
   isOnline: boolean;
@@ -76,34 +77,31 @@ const Map: React.FC<MapProps> = ({ users, onUserClick }) => {
       mapContainer.appendChild(landmarkDiv);
     });
 
-    // 사용자 마커 생성 - 더 넓게 분산 배치
+    // 사용자 마커 생성
     users.forEach((user, index) => {
       const marker = document.createElement('div');
       marker.className = `absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-all duration-300 hover:scale-125 hover:z-30 ${
         user.id === 'me' ? 'z-20' : 'z-10'
       }`;
       
-      // 위치를 더 넓게 분산시키기 위한 새로운 계산 방식
+      // 위치를 분산 배치하기 위한 계산
       const centerLat = 37.5665;
       const centerLng = 126.9780;
       
-      // 분산 범위를 크게 늘림
-      const latRange = 0.15; // 기존 0.08에서 0.15로 증가
-      const lngRange = 0.15; // 기존 0.08에서 0.15로 증가
+      const latRange = 0.20;
+      const lngRange = 0.20;
 
-      // 위치 계산을 더 넓게 분산
-      let xPos = 50 + ((user.location.lng - centerLng) / lngRange) * 60; // 기존 35에서 60으로 증가
-      let yPos = 50 - ((user.location.lat - centerLat) / latRange) * 60; // 기존 35에서 60으로 증가
+      let xPos = 50 + ((user.location.lng - centerLng) / lngRange) * 70;
+      let yPos = 50 - ((user.location.lat - centerLat) / latRange) * 70;
 
       // 사용자별로 추가 오프셋 적용하여 겹침 방지
       if (user.id !== 'me') {
-        const offsetX = (index % 3 - 1) * 8; // -8, 0, 8 픽셀 오프셋
-        const offsetY = (Math.floor(index / 3) % 3 - 1) * 8; // -8, 0, 8 픽셀 오프셋
+        const offsetX = (index % 4 - 1.5) * 12;
+        const offsetY = (Math.floor(index / 4) % 4 - 1.5) * 12;
         xPos += offsetX;
         yPos += offsetY;
       }
 
-      // 경계 체크를 더 넓게
       marker.style.left = `${Math.max(5, Math.min(95, xPos))}%`;
       marker.style.top = `${Math.max(5, Math.min(95, yPos))}%`;
 
@@ -120,28 +118,24 @@ const Map: React.FC<MapProps> = ({ users, onUserClick }) => {
 
       marker.innerHTML = `
         <div class="relative group">
-          <!-- 외부 링 (펄스 효과) -->
           <div class="absolute -inset-2 bg-gradient-to-r ${markerColor} rounded-full opacity-20 ${pulseAnimation}"></div>
           
-          <!-- 메인 마커 -->
           <div class="relative w-14 h-14 bg-gradient-to-br ${markerColor} rounded-full flex items-center justify-center shadow-lg border-3 border-white/90 backdrop-blur-sm">
             <span class="text-white text-xl drop-shadow-sm">${isCurrentUser ? '🏠' : '🐕'}</span>
           </div>
           
-          <!-- 즐겨찾기 배지 -->
           ${user.isFavorite ? `
             <div class="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-red-400 to-red-500 rounded-full flex items-center justify-center shadow-md border border-white">
               <span class="text-white text-xs">❤️</span>
             </div>
           ` : ''}
           
-          <!-- 라벨 (호버 시 나타남) -->
           <div class="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white/95 backdrop-blur-sm px-3 py-2 rounded-lg shadow-lg text-sm font-medium whitespace-nowrap border border-gray-200/50">
             <div class="flex items-center space-x-2">
               <span class="font-semibold text-gray-800">${user.dogName}</span>
               ${user.isOnline ? '<div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>' : '<div class="w-2 h-2 bg-gray-400 rounded-full"></div>'}
             </div>
-            <div class="text-xs text-gray-600">${user.name}</div>
+            <div class="text-xs text-gray-600">${user.nickname}</div>
           </div>
           
           ${isCurrentUser ? `
@@ -213,7 +207,6 @@ const Map: React.FC<MapProps> = ({ users, onUserClick }) => {
       className="relative w-full h-full bg-gradient-to-br from-blue-50 via-white to-green-50 rounded-xl overflow-hidden border-2 border-gray-100/50 shadow-inner"
       style={{ minHeight: '400px' }}
     >
-      {/* Loading state */}
       <div className="absolute inset-0 flex items-center justify-center text-gray-400 z-0">
         <div className="text-center">
           <div className="text-5xl mb-3 animate-pulse">🗺️</div>

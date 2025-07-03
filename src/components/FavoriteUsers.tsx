@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Heart, X } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -7,6 +8,7 @@ import { Button } from '@/components/ui/button';
 interface User {
   id: string;
   name: string;
+  nickname: string;
   dogName: string;
   isOnline: boolean;
   isFavorite: boolean;
@@ -33,7 +35,7 @@ const FavoriteUsers: React.FC<FavoriteUsersProps> = ({ favoriteUsers, onRemoveFa
           <div key={user.id} className="flex items-center justify-between p-2 bg-orange-50 rounded-lg group">
             <div>
               <p className="text-sm font-medium text-gray-800">{user.dogName}</p>
-              <p className="text-xs text-gray-600">{user.name}</p>
+              <p className="text-xs text-gray-600">{user.nickname}</p>
             </div>
             <div className="flex items-center space-x-2">
               <Badge variant={user.isOnline ? "default" : "secondary"} className="text-xs">

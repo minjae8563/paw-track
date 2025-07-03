@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -6,6 +7,7 @@ import { Heart, MessageCircle, MapPin, HeartOff } from 'lucide-react';
 interface User {
   id: string;
   name: string;
+  nickname: string;
   dogName: string;
   dogBreed: string;
   status: string;
@@ -83,7 +85,7 @@ const UserList: React.FC<UserListProps> = ({ users, onFavoriteRequest, onRemoveF
                     </div>
                     
                     <p className="text-sm text-gray-600 mb-1">
-                      {user.name} • {user.dogBreed}
+                      {user.nickname} • {user.dogBreed}
                     </p>
 
                     <div className="bg-white/70 px-3 py-2 rounded-md mb-2">

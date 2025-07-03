@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 interface User {
   id: string;
   name: string;
+  nickname: string;
   dogName: string;
   dogBreed: string;
   status: string;
@@ -66,6 +67,17 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, user, onSa
             />
           </div>
 
+          {/* Nickname */}
+          <div className="space-y-2">
+            <Label htmlFor="nickname">닉네임</Label>
+            <Input
+              id="nickname"
+              value={formData.nickname}
+              onChange={(e) => handleChange('nickname', e.target.value)}
+              placeholder="닉네임을 입력하세요"
+            />
+          </div>
+
           {/* Dog Name */}
           <div className="space-y-2">
             <Label htmlFor="dogName">반려견 이름</Label>
@@ -103,11 +115,10 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, user, onSa
             />
           </div>
 
-          {/* Dog Info Tips */}
+          {/* Privacy Info */}
           <div className="bg-orange-50 p-3 rounded-lg">
             <p className="text-xs text-orange-700">
-              💡 <strong>팁:</strong> 반려견의 성격이나 특징을 상태 메시지에 적어보세요!
-              (예: "활발한 아이라 친구들을 좋아해요", "조용한 산책을 선호해요")
+              🔒 <strong>개인정보 보호:</strong> 다른 사용자들에게는 닉네임만 표시됩니다. 실명은 본인만 볼 수 있어요.
             </p>
           </div>
 

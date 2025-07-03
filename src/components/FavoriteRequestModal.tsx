@@ -7,6 +7,7 @@ import { Heart, X } from 'lucide-react';
 interface User {
   id: string;
   name: string;
+  nickname: string;
   dogName: string;
   dogBreed: string;
 }
@@ -73,7 +74,7 @@ const FavoriteRequestModal: React.FC<FavoriteRequestModalProps> = ({
                     </div>
                     <div>
                       <h4 className="font-semibold text-gray-800">{request.fromUser.dogName}</h4>
-                      <p className="text-sm text-gray-600">{request.fromUser.name} • {request.fromUser.dogBreed}</p>
+                      <p className="text-sm text-gray-600">{request.fromUser.nickname} • {request.fromUser.dogBreed}</p>
                       <p className="text-xs text-gray-500">{formatTimeAgo(request.timestamp)}</p>
                     </div>
                   </div>

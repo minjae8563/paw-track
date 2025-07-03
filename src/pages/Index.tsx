@@ -17,6 +17,7 @@ const mockUsers = [
   {
     id: '1',
     name: '김민수',
+    nickname: '콩이아빠',
     dogName: '콩이',
     dogBreed: '골든리트리버',
     location: { lat: 37.5708, lng: 126.9856 }, // 광화문광장
@@ -28,6 +29,7 @@ const mockUsers = [
   {
     id: '2',
     name: '배용남',
+    nickname: '라떼맘',
     dogName: '라떼',
     dogBreed: '시바견',
     location: { lat: 37.5172, lng: 127.0473 }, // 강남역
@@ -39,6 +41,7 @@ const mockUsers = [
   {
     id: '3',
     name: '정재혁',
+    nickname: '솜이삼촌',
     dogName: '솜이',
     dogBreed: '푸들',
     location: { lat: 37.5563, lng: 126.9723 }, // 홍대입구
@@ -54,12 +57,14 @@ interface FavoriteRequest {
   fromUser: {
     id: string;
     name: string;
+    nickname: string;
     dogName: string;
     dogBreed: string;
   };
   toUser: {
     id: string;
     name: string;
+    nickname: string;
     dogName: string;
     dogBreed: string;
   };
@@ -73,6 +78,7 @@ const Index = () => {
   const [currentUser, setCurrentUser] = useState({
     id: 'me',
     name: '나',
+    nickname: '내닉네임',
     dogName: '내 강아지',
     dogBreed: '믹스',
     location: { lat: 37.5665, lng: 126.9780 }, // 명동
@@ -134,12 +140,14 @@ const Index = () => {
       fromUser: {
         id: currentUser.id,
         name: currentUser.name,
+        nickname: currentUser.nickname,
         dogName: currentUser.dogName,
         dogBreed: currentUser.dogBreed,
       },
       toUser: {
         id: targetUser.id,
         name: targetUser.name,
+        nickname: targetUser.nickname,
         dogName: targetUser.dogName,
         dogBreed: targetUser.dogBreed,
       },
@@ -220,18 +228,73 @@ const Index = () => {
         <div className="space-y-4">
           <StatusCard user={currentUser} />
           <QuickActions 
-            onLocationShare={handleLocationShare}
+            onLocationShare={() => {
+              // 하드코딩된 서울 위치로 고정 (변경 없음)
+              const seoulLocation = { lat: 37.5665, lng: 126.9780 };
+              setCurrentUser(prev => ({ ...prev, location: seoulLocation }));
+              toast({
+                title: "위치가 공유되었습니다! 🐾",
+                description: "서울 명동 중심가로 위치가 고정되었어요.",
+              });
+            }}
             onMessageClick={() => setShowMessageModal(true)}
           />
-          <FavoriteUsers favoriteUsers={favoriteUsers} onRemoveFavorite={removeFavorite} />
+          <FavoriteUsers favoriteUsers={favoriteUsers} onRemoveFavorite={(userId: string) => {
+            setUsers(prev => prev.map(user => 
+              user.id === userId 
+                ? { ...user, isFavorite: false }
+                : user
+            ));
+
+            const user = users.find(u => u.id === userId);
+            if (user) {
+              toast({
+                title: "즐겨찾기에서 제거되었습니다",
+                description: `${user.dogName}님을 즐겨찾기에서 제거했어요.`,
+              });
+            }
+          }} />
         </div>
 
         <div className="lg:col-span-2 space-y-4">
-          <ViewToggle 
-            selectedView={selectedView}
-            onViewChange={setSelectedView}
-            onlineUsersCount={onlineUsers.length}
-          />
+          <div className="flex items-center justify-between p-4 bg-white/80 backdrop-blur-sm rounded-lg border border-orange-100">
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setSelectedView('map')}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  selectedView === 'map'
+                    ? 'bg-orange-500 text-white'
+                    : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                }`}
+              >
+                🗺️ 지도
+              </button>
+              <button
+                onClick={() => setSelectedView('list')}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  selectedView === 'list'
+                    ? 'bg-orange-500 text-white'
+                    : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                }`}
+              >
+                📋 목록
+              </button>
+            </div>
+            <div className="text-sm text-gray-600">
+              활동중: {onlineUsers.length}명
+            </div>
+            <button
+              onClick={() => setShowFavoriteRequestModal(true)}
+              className="relative p-2 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+            >
+              ❤️
+              {favoriteRequests.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                  {favoriteRequests.length}
+                </span>
+              )}
+            </button>
+          </div>
 
           <Card className="bg-white/80 backdrop-blur-sm border-orange-100 overflow-hidden">
             {selectedView === 'map' ? (
@@ -246,7 +309,21 @@ const Index = () => {
                 <UserList 
                   users={users}
                   onFavoriteRequest={handleFavoriteRequest}
-                  onRemoveFavorite={removeFavorite}
+                  onRemoveFavorite={(userId: string) => {
+                    setUsers(prev => prev.map(user => 
+                      user.id === userId 
+                        ? { ...user, isFavorite: false }
+                        : user
+                    ));
+
+                    const user = users.find(u => u.id === userId);
+                    if (user) {
+                      toast({
+                        title: "즐겨찾기에서 제거되었습니다",
+                        description: `${user.dogName}님을 즐겨찾기에서 제거했어요.`,
+                      });
+                    }
+                  }}
                 />
               </div>
             )}
@@ -258,7 +335,14 @@ const Index = () => {
       <MessageModal
         isOpen={showMessageModal}
         onClose={() => setShowMessageModal(false)}
-        onSend={handleSendMessage}
+        onSend={(message: string) => {
+          setCurrentUser(prev => ({ ...prev, status: message }));
+          toast({
+            title: "메시지가 전송되었습니다! 📱",
+            description: `"${message}"`,
+          });
+          setShowMessageModal(false);
+        }}
       />
       
       <ProfileModal
@@ -284,8 +368,37 @@ const Index = () => {
         isOpen={showFavoriteRequestModal}
         onClose={() => setShowFavoriteRequestModal(false)}
         requests={favoriteRequests}
-        onAccept={handleAcceptFavoriteRequest}
-        onReject={handleRejectFavoriteRequest}
+        onAccept={(requestId: string) => {
+          const request = favoriteRequests.find(req => req.id === requestId);
+          if (!request) return;
+
+          // 양방향으로 즐겨찾기 추가
+          setUsers(prev => prev.map(user => 
+            user.id === request.fromUser.id 
+              ? { ...user, isFavorite: true }
+              : user
+          ));
+
+          // 요청 제거
+          setFavoriteRequests(prev => prev.filter(req => req.id !== requestId));
+
+          toast({
+            title: "즐겨찾기가 추가되었습니다! ❤️",
+            description: `${request.fromUser.dogName}님과 서로 즐겨찾기가 되었어요!`,
+          });
+        }}
+        onReject={(requestId: string) => {
+          const request = favoriteRequests.find(req => req.id === requestId);
+          if (!request) return;
+
+          // 요청 제거
+          setFavoriteRequests(prev => prev.filter(req => req.id !== requestId));
+
+          toast({
+            title: "요청을 거절했습니다",
+            description: `${request.fromUser.dogName}님의 즐겨찾기 요청을 거절했어요.`,
+          });
+        }}
       />
     </div>
   );
